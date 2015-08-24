@@ -13,6 +13,19 @@ def split_data(data,prob):
         by sampling from a random distrubition on each irow ndex 
         with respect to the probability'''
 
+    results = [],[]
+
+    for row in data:
+        results[0 if random.random() < prob else 1].append(row)
+
+    return results
+
+
+
+
+
+
+
 
 
 ''' We are now ready to prep our data nad apply our naive bayes classifier '''
@@ -20,9 +33,28 @@ def split_data(data,prob):
 
 ''' Prep Data '''
 
+path = r'/Users/kevm1892/Documents/KDD_Meetup_Presentation/NaiveBayes/Data/*/*'
 
-# Split data
+data = []
+
+for fn in glob.glob(path):
+
+
+    is_spam = 'ham' not in fn
+
+    with open(fn,'r') as file:
+        for line in file: 
+
+            if line.startswith('Subject: '):
+                subject = re.sub(r"Subject: ","",line).strip()
+                #subject = re.sub(r"Re:","",line).strip()
+                data.append((subject,is_spam))
+
+random.seed(0)
+
 train_data, test_data = split_data(data,0.75)
+
+
 
 
 ''' Build classifier '''
@@ -47,18 +79,30 @@ for x,est,tru in classified:
     else:
         fn+=1
 
-def recall(tp,fp,fn,tn):
+def precision(tp,fp,fn,tn):
     ''' What fraction of postitives were correctly identified '''
+    return tp / (tp + fp) 
+
     
 
-def precision(tp,fp,fn,tn):
+def recall(tp,fp,fn,tn):
     '''How accurate were our positive predictions '''
+    return tp/(tp+fn)
   
 
 def accuracy(tp,fp,fn,tn):
+    correct = tp + tn
+    total = tp + tn + fn + fp
+
+    return correct/total
+
  
 
 def f1_score(tp,fp,fn,tn):
+    p = precision(tp,fp,fn,tn)
+    r = recall(tp,fp,fn,tn)
+
+    return 2 * p * r / (p+r)
  
         
 
